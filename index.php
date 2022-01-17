@@ -144,8 +144,8 @@
 					"orderable": false
 				}]
 			});
-		});
-		
+			
+			// Aquí código de Inserción.
 		$(document).on('submit', '#formulario', function(event){
 			event.preventDefault();
 			let nombre = $("#nombre").val();
@@ -179,7 +179,9 @@
 					alert('Algunos campos son obligatorios');
 				}
 			}
-		})
+		});
+			
+		});
 	</script>
 </body>
 

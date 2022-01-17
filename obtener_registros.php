@@ -23,23 +23,26 @@ if (isset($_POST["order"])) {
 
 // Establecer el límite de elementos rows en la tabla
 if ($_POST["length"] != -1) {
-	$query .= ' LIMIT' . $_POST["start"] . ',' . $_POST["legth"];
+	$query .= ' LIMIT ' . $_POST["start"] . ', ' . $_POST["length"];
 }
 
 // Preparar mensaje '$query' en el mensajero '$stmt' para recibir datos del servidor.
-$stmt = $conexion ->prepare($query);
+$stmt = $conexion -> prepare($query);
 $stmt -> execute();
-$resultado = $stmt->fetchAll();
-// Creamos variable datos:
-$datos = array();
-// 
-$filtered_rows = $stmt->rowCount();
+$resultado = $stmt -> fetchAll();
 
+// Creamos arreglo como variable '$datos':
+$datos = array();
+
+// limitamos la cantidad de datos a mostrar en la tabla.
+$filtered_rows = $stmt -> rowCount();
+
+// Generamos el HTML con los datos de la tabla.
 foreach ($resultado as $fila) {
 	// Inicializamos la imagen
 	$imagen = '';
 	if ($fila["imagen"] != '') {
-		$imagen = '<img src="img/' . $fila["imagen"] . '"class="img-thumbnail" width="50" height="50"';
+		$imagen = '<img src="img/' . $fila["imagen"] . '"class="img-thumbnail" width="50" height="35" />';
 	}
 	else{
 		$imagen = '';
@@ -53,9 +56,11 @@ foreach ($resultado as $fila) {
 	$sub_array[] = $fila["email"];
 	$sub_array[] = $imagen;
 	$sub_array[] = $fila["fecha_creacion"];
-	$sub_array[] = '<button type="button" name="editar" id="' . $fila["id"]' . " class="btn btn-warning btn-xs editar">Editar</button>';
-	$sub_array[] = '<button type="button" name="borrar" id="' . $fila["id"]' . " class="btn btn-danger btn-xs borrar">Borrar</button>';
-	$datos = $sub_array;
+	$sub_array[] = '<button type="button" name="editar" id="' . $fila['id'] . ' class="btn btn-warning btn-xs editar">Editar</button>';
+	$sub_array[] = '<button type="button" name="borrar" id="' . $fila['id'] . ' class="btn btn-danger btn-xs borrar">Borrar</button>';
+	
+	// Exportamos la información
+	$datos[] = $sub_array;
 }
 
 $salida = array(
