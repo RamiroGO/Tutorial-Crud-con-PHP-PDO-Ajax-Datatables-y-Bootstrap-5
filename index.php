@@ -79,14 +79,14 @@
 							<input type="text" name="apellidos" id="apellidos" class="form-control">
 							<br />
 							<label for="telefono">Ingrese el Telefono</label>
-							<input type="tel" name="telefono" id="telefono" class="form-control">
+							<input type="number" min="3000000000" name="telefono" id="telefono" class="form-control">
 							<br />
 							<label for="email">Ingrese el E-mail</label>
 							<input type="email" name="email" id="email" class="form-control">
 							<br />
 							<label for="imagen_usuario">Seleccione una imagen</label>
 							<input type="file" name="imagen_usuario" id="imagen_usuario" class="form-control">
-							<span id="imagen-subida"></span>
+							<span id="imagen_subida"></span>
 							<br />
 						</div>
 						<!-- Modal - Footer -->
@@ -143,7 +143,27 @@
 				"columnsDefs": [{
 					"targets": [0, 3, 4],
 					"orderable": false
-				}]
+				}],
+				"language":{
+					"decimal":"",
+					"emptyTable": "No hay registros",
+					"info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+					"infoEmpty": "Mostrando 0 a 0 de 0 Entradas",
+					"infoFiltered": "(Filtrando de _MAX_ total entradas)",
+					"infoPostFix":"",
+					"thousands": ",",
+					"lengthMenu": "Mostrar _MENU_ Entradas",
+					"loadingRecords": "Cargando...",
+					"processing": "Procesando...",
+					"search": "Buscar:",
+					"zeroRecords": "Sin resultados encontrados",
+					"paginate": {
+						"first": "Primero",
+						"last": "Último",
+						"next": "Siguiente",
+						"previous": "Anterior"
+					}
+				}
 			});
 			
 			// Aquí código de Inserción.
@@ -181,6 +201,56 @@
 					else{
 						alert('Algunos campos son obligatorios');
 					}
+				}
+			});
+			
+			// Funcionalidad de 'Editar' sobre elemento de la clase 'editar'
+			$(document).on('click', '.editar', function(){
+				const id_usuario = $(this).attr("id");
+				$.ajax({
+					url: "obtener_registro.php",
+					method: "POST",
+					data: {id_usuario:id_usuario},
+					dataType: "json",
+					// Cargamos los datos del usuario que se encontraban previamente en el Modal para Editarlo.
+					success: function(data){
+						$('#modalUsuario').modal('show'); // Hide: Off
+						$('#nombre').val(data.nombre);
+						$('#apellidos').val(data.apellidos);
+						$('#telefono').val(data.telefono);
+						$('#email').val(data.email);
+						$('.modal-title').text("Editar Usuario");
+						$('#id_usuario').val(id_usuario);
+						$('#imagen_subida').html(data.imagen_usuario);
+						$('#action').val("Editar");
+						$('#operacion').val("Editar");
+					},
+					error: function(jqXHR, textStatus, errorThrown){
+						console.log(textStatus, errorThrown);
+					}
+				});
+			});
+			
+			// Funcionalidad de 'Borrar' sobre elemento de la clase 'borrar'
+			$(document).on('click', '.borrar', function(){
+				const id_usuario = $(this).attr("id");
+				if (confirm("¿Estás seguro de borrar el usuario con id: [" + id_usuario + "]?")) {
+					$.ajax({
+						url: "borrar.php",
+						method: "POST",
+						data: {id_usuario:id_usuario},
+						success: function(data){
+							alert(data);
+							// Recargar Tabla después de borrar el registro.
+							dataTable.ajax.reload();
+						},
+						error: function(jqXHR, textStatus, errorThrown){
+							console.log(textStatus, errorThrown);
+						}
+					});
+				}
+				else{
+					return false;
 				}
 			});
 		});
