@@ -122,6 +122,7 @@
 <!-- Manejo de Tabla DataTable -->
 	<script type="text/javascript">
 		$(document).ready(function() {
+			// Establecemos los valores que se almacenarán para '$_POST'
 			$("#botonCrear").click(function(){
 				$("#formulario")[0].reset();
 				$(".modal-title").text("Crear Usuario");
@@ -146,41 +147,42 @@
 			});
 			
 			// Aquí código de Inserción.
-		$(document).on('submit', '#formulario', function(event){
-			event.preventDefault();
-			let nombre = $("#nombre").val();
-			let apellidos = $("#apellidos").val();
-			let telefono = $("#telefono").val();
-			let email = $("#email").val();
-			let extension = $("#imagen_usuario").val().split('.').pop().toLowerCase();
-			
-			if(extension != ''){
-				if (jQuery.inArray(extension), ['gif', 'png', 'jpg', 'jpeg'] == -1) {
-					alert("Formato de Imagen inválido");
-					$("#imagen_usuario").val('');
-					return false;
+			$(document).on('submit', '#formulario', function(event){
+				event.preventDefault();
+				let nombre = $("#nombre").val();
+				let apellidos = $("#apellidos").val();
+				let telefono = $("#telefono").val();
+				let email = $("#email").val();
+				let extension = $("#imagen_usuario").val().split('.').pop().toLowerCase();
+				
+				if(extension != ''){
+					if (jQuery.inArray(extension), ['gif', 'png', 'jpg', 'jpeg'] == -1) {
+						alert("Formato de Imagen inválido");
+						// Si la extensión de la imagen no es correcto, el valor cargado se eliminará.
+						$("#imagen_usuario").val('');
+						return false;
+					}
+					// Se validan los campos ingresados por el usuario
+					if (nombre != '' && apellidos != '' && email !='') {
+						$.ajax({
+							url: "crear.php",
+							method: "POST",
+							data: new FormData(this),
+							contentType: false,
+							processData: false,
+							success: function(data){
+								alert(data);
+								$('#formulario')[0].reset();
+								$('#modalUsuario').modal('hide');
+								dataTable.ajax.reload();
+							}
+						});
+					}
+					else{
+						alert('Algunos campos son obligatorios');
+					}
 				}
-				if (nombre != '' && apellidos !=''&& email !='') {
-					$.ajax({
-						url: "crear.php",
-						method: "POST",
-						data: new FormData(this),
-						contentType: false,
-						processData: false,
-						success: function(data){
-							alert(data);
-							$('#formulario')[0].reset();
-							$('#modalUsuario').modal('hide');
-							dataTable.ajax.reload();
-						}
-					});
-				}
-				else{
-					alert('Algunos campos son obligatorios');
-				}
-			}
-		});
-			
+			});
 		});
 	</script>
 </body>
